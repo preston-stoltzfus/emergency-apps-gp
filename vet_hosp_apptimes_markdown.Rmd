@@ -1,0 +1,87 @@
+---
+title: "Emergency Appointment Trends"
+author: "Preston Stoltzfus"
+date: "2023-07-14"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Goal
+
+Discover any trends for when emergency appointments occur during working hours.
+A general practice (GP) hospital accepts emergency appointments in addition to their other appointments. However they only do this for their own clients. These appointments can cause considerable stress for the staff. Management is looking to see if these are any trends to these particular appointments.
+
+
+## Getting Started
+
+For this project I decided to use 3 different packages; "tidyverse", "skimr", "hms".
+
+``` {r}
+library(tidyverse)
+library(skimr)
+library(hms)
+```
+
+## Importing and getting familiar with the data set. 
+After that I worked on importing my data and getting familiar with it. View() & head() help me get my bearings and skim() to help find errors that need cleaned.
+
+```{r}
+vet_hosp_apptimes <- read_csv("vet_hosp_apptimes_june2022_june2023.csv")
+
+View(vet_hosp_apptimes)
+head(vet_hosp_apptimes)
+skim(vet_hosp_apptimes)
+```
+
+
+## Cleaning the data
+
+```{r}
+# formatting appt_date to date format & making sure app_time is in time format
+vet_hosp_apptimes$appt_date <- as.Date(vet_hosp_apptimes$appt_date, format = "%m/%d/%Y")
+vet_hosp_apptimes$appt_time <- as_hms(vet_hosp_apptimes$appt_time)
+
+# making characters lowercase in "reason_desc" 
+vet_hosp_apptimes <- vet_hosp_apptimes %>% 
+  mutate(reason_desc = tolower(reason_desc))
+
+# remove app times that are inaccurate (hosp. only open 7am-8pm)
+vet_hosp_apptimes <- vet_hosp_apptimes %>% 
+  filter(appt_time >= as_hms("07:00:00") & appt_time <= as_hms("20:00:00"))
+
+# looking at unique values in "reason_desc", no misspelling or variances of "emergency" found
+reason_desc_unique_values <- vet_hosp_apptimes %>% 
+  count(reason_desc)
+
+# select out only columns needed for analysis
+vet_hosp_apptimes_select <- vet_hosp_apptimes %>% 
+  select(appt_date, appt_time, reason_desc)
+
+# filtering out only emergency apps
+vet_hosp_apptimes_emergency <- vet_hosp_apptimes_select %>% 
+  filter(reason_desc == "emergency")
+```
+
+## Analyzing the data
+
+Ideally I wanted to try and identify any trends in regards to when these appointments are coming in the hospital. To do this I made a scatter plot.
+
+```{r}
+ggplot(vet_hosp_apptimes_emergency, aes(x = appt_date, y = appt_time)) + geom_point(color = "red") +
+  labs(title = "Time of emergency appointments", subtitle = "June 2022 - 2023", x = "Date", y = "Time of Day") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
+  annotate("text", x = max(vet_hosp_apptimes_emergency$appt_date), y = min(vet_hosp_apptimes_emergency$appt_time),
+           label = "Data collected from IDEXX Cornerstone Software", hjust = 1, vjust = 0)
+```
+
+## Conclusion
+
+Unfortunately I didn't see any significant correlations in regards to what time of the day emergency appointments come in. However, I did note there were 324 emergency appointments seen at the hospital within the data set which reflects one year.The hospital was open 256 business days for that year. This means that the hospital should expect to see roughly 1.3 emergency appointments each day they are open.
+
+There may be another place to look for in identifying trends to help with staff fatigue. Hospital management has stated that each appointment generally takes up 2 "slots", each "slot" being a 10 minute increment. However the mean number for appointment slots is 1.7. Seeing as the ultimate goal is to relieve staff stress, potentially from overbooking, maybe a further analysis of this mean number would be beneficial.
