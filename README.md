@@ -16,10 +16,10 @@ Seeing as this process will be listed publicaly once completed, names of the hos
 ## Data: 	
 The hospital uses a program called "cornerstone" (which is made by a company called "Idexx") which keeps all the data that will be used for this project. Information includes appointment type, time checked in, preferred doctor (which in the report is simply a number for privacy sake), etc. There were several changes in hospital structure/schedule but they have been fairly steady for around a year. It was decided to collect data from June 1st 2022-June 1st 2023.
 
-##Stakeholders: 	
+## Stakeholders: 	
 Hospital owner and office manager. Findings will likely just be shared with office manager but may include both.
 
-##Deliverable: 	
+## Deliverable: 	
 Analysis identifying any trends in regards to emergency appointments so the hospital can plan accordingly.
 
 ## Program to use:	
