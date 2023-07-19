@@ -1,9 +1,6 @@
 ## Data Analysist:	
 Preston Stoltzfus
 
-## Project stat date:	
-7/13/23
-
 ## Problem: 	
 A veterinary hospital is currently feeling overworked. The hospital is a general practice however they also see emergency appointments for their own clients. These emergency appointments appear to be unpredictable and cause a lot of time/stress for the staff. Managers are wondering if there are any trends to when these appointments come in.
 
